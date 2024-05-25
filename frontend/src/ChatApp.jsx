@@ -1,45 +1,42 @@
-import React, {useState, useEffect} from 'react';
-import io from 'socket.io-client';
+import React, { useState, useEffect } from "react";
+import io from "socket.io-client";
 
-const socket = io('http://localhost:5000') 
+const socket = io("http://localhost:3000");
 
 function ChatApp() {
-   const [message,setMessage] = useState('');
-   const [messages, setMessages] = useState([]);
-   const [village,setVillage] = useState('');
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [village, setVillage] = useState("Village1");
 
-   useEffect(() => {
-      socket.emit("joinVillage", village);
+  useEffect(() => {
+    socket.emit("joinVillage", village);
 
-      socket.on("recieveMessage", (message) => {
-         setMessages((prevMessage) => [...prevMessage,message])
-      });
+    socket.on("receiveMessage", (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
 
-      return () => {
-         socket.off("recieveMessage");
-      }
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, [village]);
 
-   },[village]);
-
-   const sendMessage = () => {
-      socket.emit("sendMessage",{ village, text: message });
-      setMessage('')
-   }
-
-
+  const sendMessage = () => {
+    socket.emit("sendMessage", { village, text: message });
+    setMessage("");
+  };
   return (
     <div>
-      <h1>village Chat</h1>
+      <h1>Village Chat</h1>
       <div>
         <select value={village} onChange={(e) => setVillage(e.target.value)}>
-          <option value="village1">village1</option>
-          <option value="village2">village2</option>
-          <option value="village3">village3</option>
+          <option value="village1">Village 1</option>
+          <option value="village2">Village 2</option>
+          <option value="village3">Village 3</option>
         </select>
       </div>
       <div>
-        {messages.map((message, index) => (
-          <div key={index}> {message.text}</div>
+        {messages.map((msg, index) => (
+          <div key={index}>{msg.text}</div>
         ))}
       </div>
       <input
@@ -52,4 +49,4 @@ function ChatApp() {
   );
 }
 
-export default ChatApp
+export default ChatApp;
